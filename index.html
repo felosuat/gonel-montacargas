@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GonEl Montacargas - Coming Soon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Anton', 'Impact', sans-serif;
+            background: #1a1a1a;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+        }
+
+        .logo-canvas {
+            max-width: 500px;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        .divider {
+            width: 100px;
+            height: 3px;
+            background: #d4781e;
+            margin: 0 auto 30px;
+            border-radius: 2px;
+        }
+
+        .coming-soon {
+            font-size: 3.5rem;
+            font-weight: 400;
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            color: #d4781e;
+        }
+
+        .message {
+            font-size: 1.2rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 300;
+            color: #b0b0b0;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 600px) {
+            .logo-canvas {
+                max-width: 300px;
+            }
+
+            .coming-soon {
+                font-size: 2rem;
+                letter-spacing: 6px;
+            }
+
+            .message {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <canvas id="logoCanvas" class="logo-canvas"></canvas>
+        <div class="divider"></div>
+        <h1 class="coming-soon">Coming Soon</h1>
+        <p class="message">
+            Estamos trabajando en algo grande.<br>
+            Pronto tendremos nuestro sitio listo para ti.
+        </p>
+    </div>
+
+    <script>
+        const img = new Image();
+        img.onload = function () {
+            const canvas = document.getElementById('logoCanvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+
+                // Calculate how "white" the pixel is
+                const brightness = (r + g + b) / 3;
+                const maxDiff = Math.max(Math.abs(r - g), Math.abs(r - b), Math.abs(g - b));
+
+                // If pixel is near-white/light gray, make it transparent
+                if (brightness > 200 && maxDiff < 40) {
+                    data[i + 3] = 0; // fully transparent
+                } else if (brightness > 160 && maxDiff < 40) {
+                    // Fade out semi-light pixels for smooth edges
+                    data[i + 3] = Math.round(255 * (1 - (brightness - 160) / 40));
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        };
+        img.src = 'logo.png';
+    </script>
+</body>
+</html>
